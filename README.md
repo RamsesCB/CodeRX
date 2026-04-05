@@ -1,47 +1,103 @@
-# Claw Code
+# CodeRX
 
-<p align="center">
-  <a href="https://github.com/ultraworkers/claw-code">ultraworkers/claw-code</a>
-  ·
-  <a href="./USAGE.md">Usage</a>
-  ·
-  <a href="./rust/README.md">Rust workspace</a>
-  ·
-  <a href="./PARITY.md">Parity</a>
-  ·
-  <a href="./ROADMAP.md">Roadmap</a>
-  ·
-  <a href="https://discord.gg/5TUQKqFWd">UltraWorkers Discord</a>
-</p>
+> Performance and UX driven fork of `ultraworkers/claw-code`, maintained by [RamsesCB](https://github.com/RamsesCB).
 
-<p align="center">
-  <a href="https://star-history.com/#ultraworkers/claw-code&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ultraworkers/claw-code&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ultraworkers/claw-code&type=Date" />
-      <img alt="Star history for ultraworkers/claw-code" src="https://api.star-history.com/svg?repos=ultraworkers/claw-code&type=Date" width="600" />
-    </picture>
-  </a>
-</p>
+CodeRX is a practical fork focused on three goals:
 
-<p align="center">
-  <img src="assets/claw-hero.jpeg" alt="Claw Code" width="300" />
-</p>
+1. Optimize runtime performance and reliability in real workflows.
+2. Improve theming and UI extensibility (plugins, formatters, visual polish).
+3. Make MCP and tool integrations easier to connect, validate, and operate.
 
-Claw Code is the public Rust implementation of the `claw` CLI agent harness.
-The canonical implementation lives in [`rust/`](./rust), and the current source of truth for this repository is **ultraworkers/claw-code**.
+## What this fork is
 
-> [!IMPORTANT]
-> Start with [`USAGE.md`](./USAGE.md) for build, auth, CLI, session, and parity-harness workflows. Make `claw doctor` your first health check after building, use [`rust/README.md`](./rust/README.md) for crate-level details, read [`PARITY.md`](./PARITY.md) for the current Rust-port checkpoint, and see [`docs/container.md`](./docs/container.md) for the container-first workflow.
+- A continuously synced fork of `ultraworkers/claw-code`.
+- A safe place to iterate on optimization, theme system, and extension architecture.
+- A production minded branch where changes are measured, tested, and realistic.
 
-## Current repository shape
+## What this fork is not
 
-- **`rust/`** — canonical Rust workspace and the `claw` CLI binary
-- **`USAGE.md`** — task-oriented usage guide for the current product surface
-- **`PARITY.md`** — Rust-port parity status and migration notes
-- **`ROADMAP.md`** — active roadmap and cleanup backlog
-- **`PHILOSOPHY.md`** — project intent and system-design framing
-- **`src/` + `tests/`** — companion Python/reference workspace and audit helpers; not the primary runtime surface
+- Not a replacement for upstream governance.
+- Not a promise to land risky rewrites in one step.
+- Not a divergence for the sake of divergence.
+
+## Upstream and sync model
+
+Upstream source of truth:
+
+- `https://github.com/ultraworkers/claw-code`
+
+This repository:
+
+- `https://github.com/RamsesCB/CodeRX`
+
+Local setup:
+
+```bash
+git clone https://github.com/RamsesCB/CodeRX.git
+cd CodeRX
+git remote add upstream https://github.com/ultraworkers/claw-code.git
+```
+
+Sync flow:
+
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+```
+
+## Why CodeRX exists
+
+Upstream is moving fast, specially in `rust/`. That speed is excellent, but it can make personal customization hard to maintain.
+
+CodeRX keeps a disciplined strategy:
+
+- Prefer additive modules over invasive edits in hot files.
+- Isolate customization in plugin/tool/theme layers when possible.
+- Keep compatibility with parity harness and existing workflows.
+
+## Focus areas (realistic roadmap)
+
+### 1) Performance optimization
+
+- Startup profiling and reduction of cold start overhead.
+- Lower tool call latency through better batching and caching.
+- Context/token efficiency improvements in agent loops.
+- Safer defaults for long running sessions (timeouts, backpressure, retries).
+
+### 2) Theme and UX system
+
+- Structured theme presets for TUI readability and contrast.
+- Cleaner visual formatting for logs, diffs, and status blocks.
+- Theme hooks for community packs without touching core execution code.
+- Better defaults for accessibility and terminal compatibility.
+
+### 3) Plugins and extension points
+
+- Clear plugin boundaries for lifecycle hooks.
+- Better docs and templates for extension authors.
+- Small compatibility layer to reduce breakage after upstream updates.
+
+### 4) MCP and integration formats
+
+- Opinionated MCP connector presets for fast local setup.
+- Health checks and diagnostics for MCP tool availability.
+- Consistent format for declaring MCP endpoints and capabilities.
+- Better examples for connecting local agents and automation servers.
+
+### 5) Test and parity discipline
+
+- Keep parity harness green when introducing optimizations.
+- Add targeted tests for performance sensitive paths.
+- Validate that theme/plugin additions do not break core behavior.
+
+## Current repository map
+
+- `rust/` -> canonical runtime and CLI implementation.
+- `USAGE.md` -> build, auth, session, and operation workflows.
+- `ROADMAP.md` -> upstream roadmap and work alignment.
+- `PARITY.md` -> parity status and migration checkpoints.
+- `src/` + `tests/` -> companion surfaces and validations.
 
 ## Quick start
 
@@ -49,45 +105,33 @@ The canonical implementation lives in [`rust/`](./rust), and the current source 
 cd rust
 cargo build --workspace
 ./target/debug/claw --help
-./target/debug/claw prompt "summarize this repository"
 ```
 
-Authenticate with either an API key or the built-in OAuth flow:
-
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-# or
-cd rust
-./target/debug/claw login
-```
-
-Run the workspace test suite:
+Run quality checks:
 
 ```bash
 cd rust
+cargo fmt
+cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 ```
 
-## Documentation map
+## Contribution policy for this fork
 
-- [`USAGE.md`](./USAGE.md) — quick commands, auth, sessions, config, parity harness
-- [`rust/README.md`](./rust/README.md) — crate map, CLI surface, features, workspace layout
-- [`PARITY.md`](./PARITY.md) — parity status for the Rust port
-- [`rust/MOCK_PARITY_HARNESS.md`](./rust/MOCK_PARITY_HARNESS.md) — deterministic mock-service harness details
-- [`ROADMAP.md`](./ROADMAP.md) — active roadmap and open cleanup work
-- [`PHILOSOPHY.md`](./PHILOSOPHY.md) — why the project exists and how it is operated
+- Keep PRs small and reviewable.
+- Avoid large edits in monolithic files unless absolutely necessary.
+- Prefer new modules (`app.rs`, `format.rs`, plugin/tool files) over one-file growth.
+- Document every optimization with expected impact and rollback path.
 
-## Ecosystem
+## Near-term milestones
 
-Claw Code is built in the open alongside the broader UltraWorkers toolchain:
+- [ ] Baseline benchmarks for startup and tool call latency.
+- [ ] First stable theme preset pack with accessibility checks.
+- [ ] MCP connector profile spec (YAML/JSON) and validator command.
+- [ ] Plugin scaffold template for quick extension bootstrapping.
+- [ ] Refactor opportunities proposal for large `main.rs` hotspots.
 
-- [clawhip](https://github.com/Yeachan-Heo/clawhip)
-- [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)
-- [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)
-- [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex)
-- [UltraWorkers Discord](https://discord.gg/5TUQKqFWd)
+## Disclaimer
 
-## Ownership / affiliation disclaimer
-
-- This repository does **not** claim ownership of the original Claude Code source material.
-- This repository is **not affiliated with, endorsed by, or maintained by Anthropic**.
+- This repository is a fork and remains aligned with upstream direction whenever possible.
+- This project is not affiliated with or endorsed by Anthropic.
